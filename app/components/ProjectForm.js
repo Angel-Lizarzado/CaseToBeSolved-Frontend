@@ -1,36 +1,40 @@
 import { useState, useEffect } from 'react';
-import { createProject } from '../utils/projects';
+import { createProject, updateProject } from '../utils/projects';
 import { listClients } from '../utils/clients';
 
-export default function ProjectForm({ token }) {
+export default function ProjectForm({ project, refreshProjects }) {
   const [formData, setFormData] = useState({
-    name: '',
-    projectCode: '',
-    email: '',
+    name: project?.name || '',
+    projectCode: project?.projectCode || '',
+    email: project?.email || '',
     address: {
-      street: '',
-      number: '',
-      postal: '',
-      city: '',
-      province: ''
+      street: project?.address?.street || '',
+      number: project?.address?.number || '',
+      postal: project?.address?.postal || '',
+      city: project?.address?.city || '',
+      province: project?.address?.province || ''
     },
-    code: '',
-    clientId: ''
+    code: project?.code || '',
+    clientId: project?.clientId || ''
   });
   const [clients, setClients] = useState([]);
 
   useEffect(() => {
     async function loadClients() {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No autorizado');
+        }
         const clients = await listClients(token);
         setClients(clients);
       } catch (error) {
-        console.error(error);
+        console.error('Error al cargar los clientes:', error);
       }
     }
 
     loadClients();
-  }, [token]);
+  }, []);
 
   const handleClientChange = (e) => {
     const selectedClient = clients.find(client => client._id === e.target.value);
@@ -55,16 +59,26 @@ export default function ProjectForm({ token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createProject(token, formData);
-      alert('Proyecto creado con éxito');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No autorizado');
+      }
+      if (project) {
+        await updateProject(token, project._id, formData);
+        alert('Proyecto actualizado con éxito');
+      } else {
+        await createProject(token, formData);
+        alert('Proyecto creado con éxito');
+      }
+      refreshProjects();
     } catch (error) {
-      console.error('Error al crear el proyecto:', error);
+      console.error('Error al crear/actualizar el proyecto:', error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-4">
-      <h2 className="text-2xl font-bold mb-4">Nuevo Proyecto</h2>
+      <h2 className="text-2xl font-bold mb-4">{project ? 'Editar Proyecto' : 'Nuevo Proyecto'}</h2>
       <div className="mb-4">
         <label className="block text-gray-700">Cliente</label>
         <select 
@@ -80,7 +94,7 @@ export default function ProjectForm({ token }) {
         </select>
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700">Nombre</label>
+        <label className="block text-gray-700">Nombre del proyecto</label>
         <input 
           type="text" 
           name="name" 
@@ -135,7 +149,7 @@ export default function ProjectForm({ token }) {
               number: e.target.value
             }
           }))}
-          className="w-full p-2 border rounded mt-2"
+          className="w-full p-2 border rounded"
         />
         <input 
           type="text" 
@@ -148,7 +162,7 @@ export default function ProjectForm({ token }) {
               postal: e.target.value
             }
           }))}
-          className="w-full p-2 border rounded mt-2"
+          className="w-full p-2 border rounded"
         />
         <input 
           type="text" 
@@ -161,7 +175,7 @@ export default function ProjectForm({ token }) {
               city: e.target.value
             }
           }))}
-          className="w-full p-2 border rounded mt-2"
+          className="w-full p-2 border rounded"
         />
         <input 
           type="text" 
@@ -174,11 +188,11 @@ export default function ProjectForm({ token }) {
               province: e.target.value
             }
           }))}
-          className="w-full p-2 border rounded mt-2"
+          className="w-full p-2 border rounded"
         />
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700">Código Interno</label>
+        <label className="block text-gray-700">Código</label>
         <input 
           type="text" 
           name="code" 
@@ -187,7 +201,7 @@ export default function ProjectForm({ token }) {
           className="w-full p-2 border rounded"
         />
       </div>
-      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Crear Proyecto</button>
+      <button type="submit" className="bg-blue-500 text-white p-2 rounded">{project ? 'Actualizar Proyecto' : 'Crear Proyecto'}</button>
     </form>
   );
 }

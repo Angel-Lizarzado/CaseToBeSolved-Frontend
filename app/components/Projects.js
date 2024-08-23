@@ -1,22 +1,4 @@
-import { useState, useEffect } from 'react';
-import { fetchProjects } from '../utils/projects'; 
-
-export default function ProjectList({ token, onSelectProject }) {
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    async function loadProjects() {
-      try {
-        const projects = await fetchProjects(token);
-        setProjects(projects);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    loadProjects();
-  }, [token]);
-
+export default function Projects({ projects, onSelectProject }) {
   return (
     <ul className="grid grid-cols-1 gap-4">
       {projects.map((project) => (

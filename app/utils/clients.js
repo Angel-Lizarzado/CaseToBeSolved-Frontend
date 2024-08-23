@@ -2,10 +2,7 @@
 
 // Función para listar clientes
 export async function listClients(token) {
-  if (typeof window === 'undefined') {
-    return []; // Devuelve una lista vacía si se llama en el servidor
-  }
-  const url = `${process.env.API_DOMAIN}/api/clients`;
+const url = `${process.env.API_DOMAIN}/api/client`;
   try {
     const response = await fetch(url, {
       method: 'GET',

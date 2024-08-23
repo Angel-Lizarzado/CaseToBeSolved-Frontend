@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }) {
             <Link href="/dashboard/projects">Proyectos</Link>
           </li>
           <li>
-            <Link href="/dashboard/albaranes">Albaranes</Link>
+            <Link href="/dashboard/delivery">Albaranes</Link>
           </li>
           <li className="mt-auto">
             <button className="text-white" onClick={logout}>Logout</button>
