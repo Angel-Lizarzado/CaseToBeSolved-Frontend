@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createProject, updateProject } from '../utils/projects';
 import { listClients } from '../utils/clients';
 
-export default function ProjectForm({ project, refreshProjects }) {
+export default function ProjectForm({ project, refreshProjects, onClose }) {
   const [formData, setFormData] = useState({
     name: project?.name || '',
     projectCode: project?.projectCode || '',
@@ -201,7 +201,8 @@ export default function ProjectForm({ project, refreshProjects }) {
           className="w-full p-2 border rounded"
         />
       </div>
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">{project ? 'Actualizar Proyecto' : 'Crear Proyecto'}</button>
+      <button type="submit" className="bg-blue-500 text-white p-2 rounded mr-2">{project ? 'Actualizar Proyecto' : 'Crear Proyecto'}</button>
+      <button type="button" onClick={onClose} className="bg-gray-300 text-gray-700 p-2 rounded">Cancelar</button>
     </form>
   );
 }

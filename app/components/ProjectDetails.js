@@ -1,31 +1,50 @@
-import { useState } from 'react';
-import ProjectForm from './ProjectForm';
+import { useState } from 'react'
+import ProjectForm from './ProjectForm'
+import { Edit, X, User, Briefcase, MapPin, Calendar, FileText } from 'lucide-react'
 
 export default function ProjectDetails({ project, refreshProjects }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleEditClick = () => {
-    setIsEditing(!isEditing);
-  };
+    setIsEditing(!isEditing)
+  }
 
   return (
-    <div className="w-full max-w-md bg-white p-4 rounded shadow mt-4">
-      <h2 className="text-2xl font-bold mb-4">Detalles del Proyecto</h2>
-      <p><strong>Nombre:</strong> {project.name}</p>
-      <p><strong>Código del Proyecto:</strong> {project.projectCode}</p>
-      <p><strong>Dirección:</strong> {project.address.street}, {project.address.number}, {project.address.city}, {project.address.province}, {project.address.postal}</p>
-      <p><strong>Fecha de Inicio:</strong> {project.begin}</p>
-      <p><strong>Fecha de Fin:</strong> {project.end}</p>
-      <p><strong>Notas:</strong> {project.notes}</p>
-      <p><strong>Creado en:</strong> {new Date(project.createdAt).toLocaleDateString()}</p>
-      <p><strong>Actualizado en:</strong> {new Date(project.updatedAt).toLocaleDateString()}</p>
-      <button 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" 
-        onClick={handleEditClick}
-      >
-        {isEditing ? "Cancelar" : "Editar Proyecto"}
-      </button>
-      {isEditing && <ProjectForm project={project} refreshProjects={refreshProjects} />}
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-indigo-800">Detalles del Proyecto</h2>
+        <button 
+          className="p-2 text-indigo-600 hover:text-indigo-800 transition-colors duration-200"
+          onClick={handleEditClick}
+        >
+          {isEditing ? <X size={24} /> : <Edit size={24} />}
+        </button>
+      </div>
+      {isEditing ? (
+        <ProjectForm project={project} refreshProjects={refreshProjects} onClose={() => setIsEditing(false)} />
+      ) : (
+        <div className="space-y-4">
+          <DetailItem icon={<Briefcase size={20} />} label="Nombre" value={project.name} />
+          <DetailItem icon={<FileText size={20} />} label="Código del Proyecto" value={project.projectCode} />
+          <DetailItem icon={<MapPin size={20} />} label="Dirección" value={`${project.address.street}, ${project.address.number}, ${project.address.city}, ${project.address.province}, ${project.address.postal}`} />
+          <DetailItem icon={<Calendar size={20} />} label="Fecha de Inicio" value={project.begin} />
+          <DetailItem icon={<Calendar size={20} />} label="Fecha de Fin" value={project.end} />
+          <DetailItem icon={<FileText size={20} />} label="Notas" value={project.notes} />
+          <DetailItem icon={<Calendar size={20} />} label="Creado en" value={new Date(project.createdAt).toLocaleDateString()} />
+          <DetailItem icon={<Calendar size={20} />} label="Actualizado en" value={new Date(project.updatedAt).toLocaleDateString()} />
+        </div>
+      )}
     </div>
-  );
+  )
+}
+
+function DetailItem({ icon, label, value }) {
+  return (
+    <div className="flex items-center">
+      <div className="mr-2 text-indigo-600">{icon}</div>
+      <div>
+        <span className="font-semibold">{label}:</span> {value}
+      </div>
+    </div>
+  )
 }

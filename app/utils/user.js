@@ -25,7 +25,6 @@ export async function createUser(data) {
   }
 
 // Función para validar un usuario con un código
-// Función para validar un usuario con un código
 export async function validateUser(data, token) {
   const url = `${process.env.API_DOMAIN}/api/user/validation`;
 
