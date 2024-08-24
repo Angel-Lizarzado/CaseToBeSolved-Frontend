@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Users, Briefcase, FileText, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Users, Briefcase, FileText, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function DashboardLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false)
