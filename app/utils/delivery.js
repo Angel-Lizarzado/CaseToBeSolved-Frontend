@@ -21,6 +21,29 @@ export async function listDeliveryNotes(token) {
   }
 }
 
+export async function getDeliveryNoteById(token, id) {
+  const url = `${process.env.API_DOMAIN}/api/deliverynote/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error de red: ${response.statusText}`);
+    }
+
+    const deliveryNote = await response.json();
+    return deliveryNote;
+  } catch (error) {
+    console.error("Error al obtener el albarán:", error);
+    throw new Error("No se pudo obtener el albarán.");
+  }
+}
+
 export async function createDeliveryNote(token, deliveryNoteData) {
   const url = `${process.env.API_DOMAIN}/api/deliverynote`;
   try {
@@ -45,8 +68,62 @@ export async function createDeliveryNote(token, deliveryNoteData) {
   }
 }
 
+export async function updateDeliveryNoteMaterials(token, id, materials) {
+  const url = `${process.env.API_DOMAIN}/api/deliverynote/multimaterial/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(materials), // Asegúrate de que materials sea un objeto con un array
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error de red: ${response.statusText} - ${errorText}`);
+    }
+
+    const updatedDeliveryNote = await response.json();
+    return updatedDeliveryNote;
+  } catch (error) {
+    console.error("Error al actualizar los materiales del albarán:", error);
+    throw new Error("No se pudo actualizar los materiales del albarán.");
+  }
+}
+
+
+
+export async function updateDeliveryNoteMulti(token, id, multi) {
+  const url = `${process.env.API_DOMAIN}/api/deliverynote/multi/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ multi }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error de red: ${response.statusText}`);
+    }
+
+    const updatedDeliveryNote = await response.json();
+    return updatedDeliveryNote;
+  } catch (error) {
+    console.error("Error al actualizar las horas del albarán:", error);
+    throw new Error("No se pudo actualizar las horas del albarán.");
+  }
+}
+
+
+
 export async function downloadDeliveryNotePDF(token, id) {
     const url = `${process.env.API_DOMAIN}/api/deliverynote/pdf/${id}`;
+    console.log("url")
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -54,8 +131,9 @@ export async function downloadDeliveryNotePDF(token, id) {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+      console.log(response)
       if (!response.ok) {
+        console.log(response)
         throw new Error(`Error de red: ${response.statusText}`);
       }
   
@@ -67,10 +145,6 @@ export async function downloadDeliveryNotePDF(token, id) {
       throw new Error("No se pudo abrir el PDF del albarán.");
     }
   }
-  
-  
-  
-  
 
 // Función para eliminar un albarán
 export async function deleteDeliveryNote(token, id) {

@@ -40,6 +40,10 @@ Sigue estos pasos para instalar y ejecutar el proyecto localmente:
 
 La aplicación utiliza la API de Bildy.
 
+## IA
+
+Se ha utilizado ia para mejorar el diseño de la web en general, y para crear un formulario mas complejo y permitirle varias funciones a la vez y ser mas dinamico
+
 ## Website
 
 [Gestor de albaranes desplegado en vercel](https://gestordealbaranes-angellizarzados-projects.vercel.app/)
