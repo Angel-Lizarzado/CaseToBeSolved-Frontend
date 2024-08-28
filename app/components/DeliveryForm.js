@@ -3,9 +3,7 @@ import { createDeliveryNote, updateDeliveryNoteMaterials, updateDeliveryNoteMult
 import { listClients } from '../utils/clients';
 import { listProjects } from '../utils/projects';
 import { X, Plus, Minus } from 'lucide-react';
-import ClientSelector from './ClientSelector';
-import ProjectSelector from './ProjectSelector';
-import FormatSelector from './FormatSelector';
+
 
 export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
   const [formData, setFormData] = useState({
@@ -144,23 +142,53 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
           <X size={24} />
         </button>
       </div>
-      <ClientSelector 
-        clients={clients} 
-        value={formData.clientId} 
-        onChange={handleClientChange} 
-        error={errors.clientId} 
-      />
-      <ProjectSelector 
-        projects={filteredProjects} 
-        value={formData.projectId} 
-        onChange={handleChange} 
-        error={errors.projectId} 
-      />
-      <FormatSelector 
-        value={formData.format} 
-        onChange={handleChange} 
-        error={errors.format} 
-      />
+      <div>
+      <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">Cliente</label>
+      <select 
+        id="clientId"
+        name="clientId" 
+        value={value} 
+        onChange={onChange} 
+        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
+      >
+        <option value="">Selecciona un cliente</option>
+        {clients.map(client => (
+          <option key={client._id} value={client._id}>{client.name}</option>
+        ))}
+      </select>
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+    </div>
+    <div>
+      <label htmlFor="projectId" className="block text-sm font-medium text-gray-700">Proyecto</label>
+      <select 
+        id="projectId"
+        name="projectId" 
+        value={value} 
+        onChange={onChange} 
+        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
+      >
+        <option value="">Selecciona un proyecto</option>
+        {projects.map(project => (
+          <option key={project._id} value={project._id}>{project.name}</option>
+        ))}
+      </select>
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+    </div>
+    <div>
+      <label htmlFor="format" className="block text-sm font-medium text-gray-700">Formato</label>
+      <select 
+        id="format"
+        name="format" 
+        value={value} 
+        onChange={onChange} 
+        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
+      >
+        <option value="">Selecciona un formato</option>
+        <option value="material">Material</option>
+        <option value="hours">Horas</option>
+      </select>
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+    </div>
       {formData.format === 'material' && (
         <div className="space-y-4">
           <div>
