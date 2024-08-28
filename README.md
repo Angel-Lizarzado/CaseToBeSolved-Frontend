@@ -42,7 +42,7 @@ La aplicación utiliza la API de Bildy.
 
 ## IA
 
-Se ha utilizado ia para mejorar el diseño de la web en general, y para crear un formulario mas complejo y permitirle varias funciones a la vez y ser mas dinamico
+Se ha utilizado ia para mejorar el diseño de la web en general, y para crear un formulario mas complejo y permitirle varias funciones a la vez haciendolo mas dnamico
 
 ## Website
 
