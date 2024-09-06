@@ -44,6 +44,7 @@ export async function getDeliveryNoteById(token, id) {
   }
 }
 
+// Funcion para crear un albaran
 export async function createDeliveryNote(token, deliveryNoteData) {
   const url = `${process.env.API_DOMAIN}/api/deliverynote`;
   try {
@@ -94,6 +95,7 @@ export async function updateDeliveryNoteMaterials(token, id, materials) {
 }
 
 
+//Funcion para editar un albaran
 
 export async function updateDeliveryNoteMulti(token, id, multi) {
   const url = `${process.env.API_DOMAIN}/api/deliverynote/multi/${id}`;
@@ -120,6 +122,7 @@ export async function updateDeliveryNoteMulti(token, id, multi) {
 }
 
 
+//Funcion para descargar un albaran
 
 export async function downloadDeliveryNotePDF(token, id) {
     const url = `${process.env.API_DOMAIN}/api/deliverynote/pdf/${id}`;

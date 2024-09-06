@@ -1,26 +1,30 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { createDeliveryNote, updateDeliveryNoteMaterials, updateDeliveryNoteMulti } from '../utils/delivery';
 import { listClients } from '../utils/clients';
 import { listProjects } from '../utils/projects';
 import { X, Plus, Minus } from 'lucide-react';
-
+import ClientSelector from './ClientSelector';
+import ProjectSelector from './ProjectSelector';
+import FormatSelector from './FormatSelector';
 
 export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
   const [formData, setFormData] = useState({
     clientId: '',
     projectId: '',
     format: '',
-    material: '',
     hours: 0,
     description: '',
     workdate: '',
-    materials: [{ name: '', quantity: '', unit: 'Kg' }],
-    multi: [{ name: '', hours: '', description: '' }]
+    materials: [],
+    multi: []
   });
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -88,8 +92,8 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
     if (!formData.clientId) errors.clientId = 'El cliente es obligatorio';
     if (!formData.projectId) errors.projectId = 'El proyecto es obligatorio';
     if (!formData.format) errors.format = 'El formato es obligatorio';
-    if (formData.format === 'material' && !formData.material) errors.material = 'El material es obligatorio';
-    if (formData.format === 'hours' && !formData.hours) errors.hours = 'Las horas son obligatorias';
+    if (formData.format === 'material' && formData.materials.length === 0) errors.materials = 'Debe agregar al menos un material';
+    if (formData.format === 'hours' && formData.hours.length === 0) errors.hours = 'Debe agregar al menos un trabajador';
     if (!formData.description) errors.description = 'La descripción es obligatoria';
     if (!formData.workdate) errors.workdate = 'La fecha de trabajo es obligatoria';
     return errors;
@@ -103,6 +107,10 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
       return;
     }
     const token = localStorage.getItem('token');
+    if (!token) {
+      setErrors({ submit: 'No autorizado' });
+      return;
+    }
   
     const workdate = new Date(formData.workdate);
     const formattedDate = `${workdate.getMonth() + 1}/${workdate.getDate()}/${workdate.getFullYear()}`;
@@ -111,7 +119,6 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
       clientId: formData.clientId,
       projectId: formData.projectId,
       format: formData.format,
-      material: formData.format === 'material' ? formData.material : null,
       hours: formData.format === 'hours' ? formData.hours : null,
       description: formData.description,
       workdate: formattedDate
@@ -127,10 +134,15 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
         await updateDeliveryNoteMulti(token, newDeliveryNote._id, formData.multi);
       }
   
+      setSuccessMessage('Albarán creado satisfactoriamente');
       refreshDeliveryNotes();
-      onClose();
+      setTimeout(() => {
+        setSuccessMessage('');
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error('Error al crear el albarán:', error);
+      setErrors({ submit: 'Error al crear el albarán. Por favor, inténtalo de nuevo.' });
     }
   };
 
@@ -142,67 +154,35 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
           <X size={24} />
         </button>
       </div>
-      <div>
-      <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">Cliente</label>
-      <select 
-        id="clientId"
-        name="clientId" 
-        value={value} 
-        onChange={onChange} 
-        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
-      >
-        <option value="">Selecciona un cliente</option>
-        {clients.map(client => (
-          <option key={client._id} value={client._id}>{client.name}</option>
-        ))}
-      </select>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-    </div>
-    <div>
-      <label htmlFor="projectId" className="block text-sm font-medium text-gray-700">Proyecto</label>
-      <select 
-        id="projectId"
-        name="projectId" 
-        value={value} 
-        onChange={onChange} 
-        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
-      >
-        <option value="">Selecciona un proyecto</option>
-        {projects.map(project => (
-          <option key={project._id} value={project._id}>{project.name}</option>
-        ))}
-      </select>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-    </div>
-    <div>
-      <label htmlFor="format" className="block text-sm font-medium text-gray-700">Formato</label>
-      <select 
-        id="format"
-        name="format" 
-        value={value} 
-        onChange={onChange} 
-        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${error ? 'border-red-500' : ''}`}
-      >
-        <option value="">Selecciona un formato</option>
-        <option value="material">Material</option>
-        <option value="hours">Horas</option>
-      </select>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-    </div>
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{successMessage}</span>
+        </div>
+      )}
+      {errors.submit && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{errors.submit}</span>
+        </div>
+      )}
+      <ClientSelector 
+        clients={clients}
+        value={formData.clientId}
+        onChange={handleClientChange}
+        error={errors.clientId}
+      />
+      <ProjectSelector 
+        projects={filteredProjects}
+        value={formData.projectId}
+        onChange={handleChange}
+        error={errors.projectId}
+      />
+      <FormatSelector 
+        value={formData.format}
+        onChange={handleChange}
+        error={errors.format}
+      />
       {formData.format === 'material' && (
         <div className="space-y-4">
-          <div>
-            <label htmlFor="material" className="block text-sm font-medium text-gray-700">Tipo de Material</label>
-            <input 
-              id="material"
-              type="text" 
-              name="material" 
-              value={formData.material} 
-              onChange={handleChange} 
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${errors.material ? 'border-red-500' : ''}`}
-            />
-            {errors.material && <p className="mt-1 text-sm text-red-500">{errors.material}</p>}
-          </div>
           {formData.materials.map((item, index) => (
             <div key={index} className="bg-gray-50 p-4 rounded-md">
               <div className="flex justify-between items-center mb-2">
@@ -253,6 +233,7 @@ export default function DeliveryForm({ refreshDeliveryNotes, onClose }) {
             <Plus size={20} className="mr-2" />
             Agregar Material
           </button>
+          {errors.materials && <p className="mt-1 text-sm text-red-500">{errors.materials}</p>}
         </div>
       )}
       {formData.format === 'hours' && (

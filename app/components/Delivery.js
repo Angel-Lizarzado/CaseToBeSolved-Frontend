@@ -21,6 +21,7 @@ export default function Delivery({ deliveryNotes, refreshDeliveryNotes }) {
       await deleteDeliveryNote(token, id)
       alert('Albarán eliminado con éxito')
       refreshDeliveryNotes()
+      setExpandedNote(null)
     } catch (error) {
       console.error('Error al eliminar el albarán:', error)
     }
@@ -30,7 +31,7 @@ export default function Delivery({ deliveryNotes, refreshDeliveryNotes }) {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-4 text-indigo-800">Lista de Albaranes</h2>
       {deliveryNotes.length === 0 ? (
-        <p className="text-gray-500">No hay albaranes disponibles.</p>
+        <p className="text-gray-500 text-center py-4">No hay albaranes registrados.</p>
       ) : (
         <div className="flex">
           <ul className="space-y-2 w-1/2 pr-4 border-r border-gray-200">
@@ -59,8 +60,9 @@ export default function Delivery({ deliveryNotes, refreshDeliveryNotes }) {
                 <h3 className="text-xl font-semibold text-indigo-800 mb-3">Detalles del Albarán</h3>
                 <div className="space-y-2">
                   <p><strong>Formato:</strong> {deliveryNotes.find(note => note._id === expandedNote).format}</p>
-                  <p><strong>Material:</strong> {deliveryNotes.find(note => note._id === expandedNote).material || 'N/A'}</p>
-                  <p><strong>Horas:</strong> {deliveryNotes.find(note => note._id === expandedNote).hours || 'N/A'}</p>
+                  {/* Al añadir para añadir multiples trabajadores o materiales, me registra N/A, comentado hasta resolver*/}
+                  {/* <p><strong>Material:</strong> {deliveryNotes.find(note => note._id === expandedNote).material || 'N/A'}</p>
+                  <p><strong>Horas:</strong> {deliveryNotes.find(note => note._id === expandedNote).hours || 'N/A'}</p> */}
                   <p><strong>Descripción:</strong> {deliveryNotes.find(note => note._id === expandedNote).description}</p>
                   <p><strong>Fecha de Trabajo:</strong> {new Date(deliveryNotes.find(note => note._id === expandedNote).workdate).toLocaleDateString()}</p>
                   <div className="flex space-x-2 mt-4">
